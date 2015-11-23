@@ -57,22 +57,27 @@ def install_newrelic_service_linux
 end
 
 def install_newrelic_service_windows
+
+  package_path = "#{Chef::Config[:file_cache_path]}/NewRelicDotNETAgent.msi"
+
   if node['kernel']['machine'] == 'x86_64'
-    windows_package 'New Relic Server Monitor' do
+    remote_file 'Download New Relic Server Monitor' do
+      path package_path
       source "http://download.newrelic.com/windows_server_monitor/release/NewRelicServerMonitor_x64_#{new_resource.windows_version}.msi"
-      options "/L*v install.log /qn NR_LICENSE_KEY=#{new_resource.license}"
-      action new_resource.action
-      version new_resource.windows_version
-      checksum new_resource.windows64_checksum
     end
   else
-    windows_package 'New Relic Server Monitor' do
+    remote_file 'Download New Relic Server Monitor' do
+      path package_path
       source "http://download.newrelic.com/windows_server_monitor/release/NewRelicServerMonitor_x86_#{new_resource.windows_version}.msi"
-      options "/L*v install.log /qn NR_LICENSE_KEY=#{new_resource.license}"
-      action new_resource.action
-      version new_resource.windows_version
-      checksum new_resource.windows32_checksum
     end
+  end
+
+  windows_package 'New Relic Server Monitor' do
+    source package_path
+    options "/L*v install.log /qn NR_LICENSE_KEY=#{new_resource.license}"
+    action new_resource.action
+    version new_resource.windows_version
+    checksum new_resource.windows64_checksum
   end
   # on Windows service creation/startup is done by the installer
 end
