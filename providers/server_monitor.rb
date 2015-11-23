@@ -77,7 +77,6 @@ def install_newrelic_service_windows
     options "/L*v install.log /qn NR_LICENSE_KEY=#{new_resource.license}"
     action new_resource.action
     version new_resource.windows_version
-    checksum new_resource.windows64_checksum
   end
   # on Windows service creation/startup is done by the installer
 end
